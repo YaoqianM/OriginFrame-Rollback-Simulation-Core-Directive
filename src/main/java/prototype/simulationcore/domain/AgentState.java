@@ -1,44 +1,65 @@
 package prototype.simulationcore.domain;
 
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
- * Immutable snapshot of the agent's internal values at a specific step.
+ * Rich snapshot of an agent's internal and external context.
  */
-public record AgentState(int stepCount, int energy) {
+public record AgentState(
+        Position position,
+        double energy,
+        double resources,
+        Map<String, Double> sensorReadings,
+        Map<String, Double> internalState
+) implements Serializable {
+
+    private static final long serialVersionUID = -1978907712711866508L;
 
     public AgentState {
-        if (stepCount < 0) {
-            throw new IllegalArgumentException("stepCount must be non-negative");
-        }
+        position = position == null ? Position.origin() : position;
+        sensorReadings = sensorReadings == null ? Map.of() : Map.copyOf(sensorReadings);
+        internalState = internalState == null ? Map.of() : Map.copyOf(internalState);
     }
 
     /**
-     * @return baseline state for a newly created agent.
+     * Baseline state for a freshly minted agent.
      */
     public static AgentState initial() {
-        return new AgentState(0, 0);
+        return new AgentState(Position.origin(), 100.0, 0.0, Map.of(), Map.of());
     }
 
     /**
-     * @param energyDelta amount to add (or subtract) from current energy
-     * @return new state with the next step recorded
-     */
-    public AgentState next(int energyDelta) {
-        return new AgentState(stepCount + 1, energy + energyDelta);
-    }
-
-    /**
-     * @return a defensive copy that helps signal intent when sharing state.
+     * @return deep copy of the current state for lineage captures.
      */
     public AgentState snapshot() {
-        return new AgentState(stepCount, energy);
+        return new AgentState(position, energy, resources, sensorReadings, internalState);
     }
 
-    public AgentState withEnergy(int newEnergy) {
-        return new AgentState(stepCount, newEnergy);
+    public AgentState withPosition(Position newPosition) {
+        return new AgentState(newPosition == null ? Position.origin() : newPosition,
+                energy, resources, sensorReadings, internalState);
     }
 
-    public AgentState resetSteps() {
-        return new AgentState(0, energy);
+    public AgentState adjustEnergy(double delta) {
+        return new AgentState(position, Math.max(0.0, energy + delta), resources, sensorReadings, internalState);
+    }
+
+    public AgentState adjustResources(double delta) {
+        return new AgentState(position, energy, Math.max(0.0, resources + delta), sensorReadings, internalState);
+    }
+
+    public AgentState withSensorReading(String key, double value) {
+        Map<String, Double> updated = new HashMap<>(sensorReadings);
+        updated.put(key, value);
+        return new AgentState(position, energy, resources, updated, internalState);
+    }
+
+    public AgentState withInternalState(String key, double value) {
+        Map<String, Double> updated = new HashMap<>(internalState);
+        updated.put(key, value);
+        return new AgentState(position, energy, resources, sensorReadings, updated);
     }
 }
 

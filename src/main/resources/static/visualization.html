@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Simulation Visualization Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
+    <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <style>
+        :root {
+            font-family: "Segoe UI", Roboto, sans-serif;
+            color: #f2f2f2;
+            background-color: #0f172a;
+        }
+
+        body {
+            margin: 0;
+            padding: 1rem 2rem 3rem;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .panel {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(226, 232, 240, 0.1);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-top: 1rem;
+            box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.5);
+        }
+
+        label span {
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            color: #94a3b8;
+        }
+
+        input {
+            padding: 0.6rem 0.8rem;
+            border-radius: 8px;
+            border: 1px solid rgba(148, 163, 184, 0.5);
+            background: transparent;
+            color: inherit;
+        }
+
+        button {
+            background: #38bdf8;
+            border: none;
+            border-radius: 8px;
+            padding: 0.6rem 1rem;
+            color: #0f172a;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        button:hover {
+            background: #7dd3fc;
+        }
+
+        #agent-network, #topology-network {
+            height: 320px;
+            border-radius: 8px;
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(226, 232, 240, 0.1);
+        }
+
+        pre {
+            max-height: 240px;
+            overflow: auto;
+            background: rgba(15, 23, 42, 0.7);
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid rgba(226, 232, 240, 0.1);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .metric {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        small {
+            color: #94a3b8;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div>
+        <h1>Visualization Dashboard</h1>
+        <small>Minimal front-end using Chart.js & vis.js</small>
+    </div>
+    <label>
+        <span>Simulation ID</span><br>
+        <input id="simId" type="text" value="default">
+    </label>
+    <div>
+        <button id="refreshBtn">Refresh Snapshot</button>
+        <button id="timelineBtn">Refresh Timeline</button>
+    </div>
+</header>
+
+<section class="panel">
+    <h2>Real-time Metrics</h2>
+    <div class="grid" id="metricsGrid">
+        <div><div class="metric" id="totalAgents">0</div><small>Total Agents</small></div>
+        <div><div class="metric" id="avgEnergy">0</div><small>Avg Energy</small></div>
+        <div><div class="metric" id="avgResources">0</div><small>Avg Resources</small></div>
+        <div><div class="metric" id="eventRate">0</div><small>Events / min</small></div>
+    </div>
+</section>
+
+<section class="panel">
+    <h2>Timeline</h2>
+    <canvas id="timelineChart" height="120"></canvas>
+</section>
+
+<section class="panel grid">
+    <div>
+        <h2>Agent Network</h2>
+        <div id="agent-network"></div>
+    </div>
+    <div>
+        <h2>Infrastructure Topology</h2>
+        <div id="topology-network"></div>
+    </div>
+</section>
+
+<section class="panel">
+    <h2>Raw World Snapshot</h2>
+    <pre id="worldState">{ }</pre>
+</section>
+
+<script>
+    const timelineCtx = document.getElementById('timelineChart').getContext('2d');
+    const timelineChart = new Chart(timelineCtx, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Energy',
+                data: [],
+                borderColor: '#38bdf8',
+                tension: 0.3
+            }, {
+                label: 'Resources',
+                data: [],
+                borderColor: '#a855f7',
+                tension: 0.3
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: { ticks: { color: '#e2e8f0' } },
+                y: { ticks: { color: '#e2e8f0' } }
+            },
+            plugins: { legend: { labels: { color: '#e2e8f0' } } }
+        }
+    });
+
+    let metricStream;
+
+    async function fetchJson(path) {
+        const response = await fetch(path);
+        if (!response.ok) {
+            throw new Error(`Request failed: ${response.status}`);
+        }
+        return response.json();
+    }
+
+    function currentSimId() {
+        return document.getElementById('simId').value || 'default';
+    }
+
+    function renderGraph(containerId, graph) {
+        const container = document.getElementById(containerId);
+        if (!graph || graph.nodes.length === 0) {
+            container.innerHTML = '<small>No data available</small>';
+            return;
+        }
+        const nodes = new vis.DataSet(graph.nodes.map(node => ({
+            id: node.id,
+            label: node.label,
+            title: JSON.stringify(node.metadata || {}, null, 2)
+        })));
+        const edges = new vis.DataSet(graph.edges.map(edge => ({
+            from: edge.from,
+            to: edge.to,
+            label: edge.label,
+            arrows: 'to'
+        })));
+        new vis.Network(container, {nodes, edges}, {
+            interaction: { hover: true },
+            physics: { stabilization: true }
+        });
+    }
+
+    async function refreshWorld() {
+        const simId = currentSimId();
+        const world = await fetchJson(`/visualization/${simId}/world`);
+        document.getElementById('worldState').textContent = JSON.stringify(world, null, 2);
+        renderGraph('agent-network', world.agentNetwork);
+        updateMetrics(world.metrics);
+        refreshTopology();
+    }
+
+    async function refreshTopology() {
+        const simId = currentSimId();
+        const graph = await fetchJson(`/visualization/${simId}/topology`);
+        renderGraph('topology-network', graph);
+    }
+
+    async function refreshTimeline() {
+        const simId = currentSimId();
+        const timeline = await fetchJson(`/visualization/${simId}/timeline`);
+        timelineChart.data.labels = timeline.map(point => new Date(point.timestamp).toLocaleTimeString());
+        timelineChart.data.datasets[0].data = timeline.map(point => point.energy);
+        timelineChart.data.datasets[1].data = timeline.map(point => point.resources);
+        timelineChart.update();
+    }
+
+    function updateMetrics(metrics) {
+        if (!metrics) {
+            return;
+        }
+        document.getElementById('totalAgents').textContent = metrics.totalAgents ?? 0;
+        document.getElementById('avgEnergy').textContent = Number(metrics.averageEnergy ?? 0).toFixed(1);
+        document.getElementById('avgResources').textContent = Number(metrics.averageResources ?? 0).toFixed(1);
+        const rate = metrics.eventRatePerMinute ?? 0;
+        document.getElementById('eventRate').textContent = Number(rate).toFixed(1);
+    }
+
+    function startStream() {
+        const simId = currentSimId();
+        if (metricStream) {
+            metricStream.close();
+        }
+        metricStream = new EventSource(`/visualization/${simId}/stream`);
+        const handler = (event) => {
+            const payload = JSON.parse(event.data);
+            updateMetrics(payload);
+        };
+        metricStream.addEventListener('metrics', handler);
+        metricStream.onerror = () => metricStream.close();
+    }
+
+    document.getElementById('refreshBtn').addEventListener('click', refreshWorld);
+    document.getElementById('timelineBtn').addEventListener('click', refreshTimeline);
+    document.getElementById('simId').addEventListener('change', () => {
+        refreshWorld().catch(console.error);
+        refreshTimeline().catch(console.error);
+        startStream();
+    });
+
+    refreshWorld().catch(console.error);
+    refreshTimeline().catch(console.error);
+    refreshTopology().catch(console.error);
+    startStream();
+</script>
+</body>
+</html>
+

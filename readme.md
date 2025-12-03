@@ -1,97 +1,99 @@
-# Prototype v0.1 — Lineage-Aware Rollback-Capable Digital Life Simulation
+# Lineage-Sim
 
-Author: Your Name  
-Purpose: NIW Exhibit — Demonstration of Novel Approach to Self-Healing, Lineage-Tracked Distributed Simulation
+Lineage-Sim is a Spring Boot 3 / Java 17 prototype that demonstrates how a self-healing digital life simulation can expose auditable, lineage-aware state transitions, runtime checkpoints, and autonomous recovery workflows through a single API surface. Every agent mutation, checkpoint, and recovery step is tracked so that operators can roll forward, roll back, or replay the system with confidence.
 
----
+## Why It Matters
 
-## 0. System Goals
+- **Transparent AI state** – every `step()` emits a lineage event so safety teams can inspect how policies influence agents over time.
+- **Deterministic rollback** – checkpoints and compensating transactions make it trivial to restore any service or agent to a previous state.
+- **Autonomous recovery** – the orchestrator isolates unhealthy services, heals dependencies, rolls back unsafe changes, redeploys, and validates automatically.
+- **First-class documentation** – every controller advertises request/response examples, shared error codes, and a hosted Swagger UI.
 
-Demonstrate a transparent, lineage-aware simulation runtime where every agent transition is observable, reversible, and reproducible. Lineage history is now directly inspectable via the API, giving operators an auditable trail for AI safety and debugging.
+## Core Capabilities
 
----
+- Simulation core (`prototype.simulationcore`) for agent policies, state machines, and lineage events.
+- Evolution engine (`prototype.simulationcore.evolution`) for reward tracking, survival selection, and generation orchestration.
+- Lineage runtime (`prototype.lineageruntime`) for checkpoints, transactional rollback, and Kafka event streaming.
+- Autonomous recovery workflow (`prototype.lineageruntime.recovery`) that coordinates detect → isolate → rollback → recover → validate.
+- REST API with OpenAPI 3.1 annotations, reusable response envelopes, and typed error codes (`ApiError`, `ErrorCode`).
+- Out-of-the-box Swagger UI (`/swagger-ui.html`) plus deep-dive docs in `ARCHITECTURE.md`, `API-REFERENCE.md`, and `DEPLOYMENT.md`.
 
-## 1. Overview
+## Tech Stack
 
-This prototype demonstrates the core concepts of a lineage-aware,
-rollback-capable digital life simulation system. It implements:
+- Java 17, Spring Boot 3.2, Spring Data JPA, Spring Kafka, Springdoc OpenAPI
+- MySQL for checkpoint persistence
+- Apache Kafka for lineage, recovery, and rollback event streams
+- Maven for builds, Docker Compose for local infrastructure
 
-- A simple digital "Agent" with internal state.
-- A behavior loop (`step()`) that evolves the agent state.
-- A Kafka-backed lineage event system that records each state transition.
-- A rollback service that restores the agent to a previous known state.
-- A replay service that reconstructs the agent's entire evolution from Kafka events.
+## Repository Layout
 
-This minimal version illustrates the foundation of the broader NIW project.
-It demonstrates feasibility, architectural clarity, and the novel concept
-of combining digital life simulation with distributed rollback and event lineage.
-
----
-
-## 2. Architecture Diagram (Mermaid)
-
-```mermaid
-flowchart TD
-    A[Agent State] -->|step()| B[Simulation Service]
-    B -->|emit event| C[Kafka Topic: lineage-events]
-    C --> D[Lineage Consumer]
-    D --> E[State Store]
-    E -->|rollback| F[Rollback Service]
-    C -->|replay events| G[Replay Service]
-    G --> A
+```
+src/main/java/prototype
+├─ LineageSimApplication.java
+├─ api/…                     # Transaction API, error model, documentation helpers
+├─ config/OpenApiConfig.java # Swagger/OpenAPI metadata
+├─ lineageruntime/…          # Checkpoints, resilience, recovery orchestration
+└─ simulationcore/…          # Agent domain, policies, services, controllers
 ```
 
----
 
-## 3. REST API
+## Quick Start (Local)
 
-- `POST /simulate/step` — advance the agent one tick, emit a lineage event, and return the updated agent state.
-- `POST /simulate/rollback` — restore the agent to the state captured by the most recent lineage event.
-- `POST /simulate/replay` — rebuild the agent by replaying the full lineage history from Kafka.
-- `GET /simulate/history` — return the lineage timeline as a list of `LineageRecord` objects for auditing.
+1. **Install prerequisites** – Java 17, Maven 3.9+, Docker Desktop (for Kafka/MySQL).
+2. **Bootstrap infrastructure**
+   ```bash
+   docker-compose up -d
+   ```
+3. **Run the application**
+   ```bash
+   mvn spring-boot:run
+   ```
+4. **Explore the API surface**
+   - Swagger UI: <http://localhost:8080/swagger-ui.html>
+   - OpenAPI JSON: <http://localhost:8080/v3/api-docs>
+   - Health check: <http://localhost:8080/actuator/health>
 
-Example `LineageRecord` JSON:
+## Documentation
+
+- `ARCHITECTURE.md` – system design, data flow, and component responsibilities.
+- `API-REFERENCE.md` – endpoint-by-endpoint contract, curl examples, and error codes.
+- `DEPLOYMENT.md` – local/remote setup, environment configuration, and hardening tips.
+
+## Observability & Error Handling
+
+All errors share the `ApiError` envelope:
 
 ```json
 {
-  "eventId": "9f2e2ab0-4f0a-4a51-8e6c-a6f2c4d8b9bc",
-  "lineageId": "agent-1",
-  "previousState": 2,
-  "resultingState": 3,
-  "timestamp": "2025-01-15T12:34:56.789Z"
+  "code": "TRX-404",
+  "status": 404,
+  "reason": "Not Found",
+  "message": "Transaction 550e8400-e29b-41d4-a716-446655440000 was not found.",
+  "traceId": "c5d2a950-2f3f-4a12-9a33-6cf692ec12aa",
+  "timestamp": "2025-05-05T10:17:00Z",
+  "metadata": {}
 }
 ```
 
----
+Every controller documents its success/error responses and embeds example payloads. Trace IDs map 1:1 with structured logs to simplify debugging.
 
-## 4. Manual Testing
+## Testing & Quality
 
-Assuming the Spring Boot app is running locally on `http://localhost:8080`, each POST returns the current `Agent` JSON payload:
+- Run the full test suite: `mvn test`
+- Build without tests (CI-style): `mvn -DskipTests package`
+- Linting/formatting rely on the Spring Boot conventions; additional checks can be wired in via Maven plugins.
 
-```bash
-# Advance the simulation one step and emit a lineage event
-curl -X POST http://localhost:8080/simulate/step
+## Contributing
 
-# Roll back to the previous state recorded in Kafka
-curl -X POST http://localhost:8080/simulate/rollback
+1. Fork/branch from `main`.
+2. Keep changes small and documented; update Swagger annotations for any API tweak.
+3. Run `mvn test` and update `API-REFERENCE.md` if contracts change.
+4. Open a PR referencing the relevant issue or architectural decision.
 
-# Rebuild the state from the complete lineage history
-curl -X POST http://localhost:8080/simulate/replay
-```
+## Next Steps
 
----
+- Extend the simulation core with new policies or environments, then document them under `ARCHITECTURE.md`.
+- Subscribe to the Kafka topics (`lineage-events`, `recovery-events`, `rollback-events`) to power dashboards or analytics.
+- Harden deployments by following the recommendations in `DEPLOYMENT.md` (TLS, secrets management, scaling playbooks).
 
-## 5. How to Run
-
-1. Start Kafka + Zookeeper: `docker-compose up -d`
-2. Launch the Spring Boot app: `mvn spring-boot:run`
-
----
-
-## 6. Sanity Check
-
-With a fresh agent (`stepCount=0`, `energy=0`):
-
-- Call `POST /simulate/step` three times → state progresses 0→1→2→3 for both `stepCount` and `energy`.
-- Call `POST /simulate/rollback` once → state returns to `stepCount=2`, `energy=2`.
-- Call `POST /simulate/replay` → state rebuilds to `stepCount=3`, `energy=3` based on the lineage history.
+Happy experimenting—the combination of lineage tracking, transactional rollback, and automated recovery makes it easier to reason about complex, adaptive systems. Dive into the docs and start building.

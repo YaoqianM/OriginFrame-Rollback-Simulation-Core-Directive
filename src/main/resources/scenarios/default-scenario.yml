@@ -1,0 +1,31 @@
+name: baseline-stability
+description: Baseline scenario that injects a few disturbances for orchestration tests.
+initialState:
+  temperature: 22.5
+  pressure: 1.0
+  capacityOnline: 0.95
+events:
+  - tick: 5
+    type: SCENARIO_EVENT
+    payload:
+      kind: environment-change
+      description: Inject thermal spike for instrumentation
+  - tick: 8
+    type: NODE_FAILED
+    payload:
+      nodeId: edge-gateway-3
+      reason: simulated fault
+  - tick: 12
+    type: NODE_RECOVERED
+    payload:
+      nodeId: edge-gateway-3
+      reason: auto-healed
+  - tick: 15
+    type: AGENT_SPAWNED
+    payload:
+      policy: explorer
+      hint: seeded-by-scenario
+successCriteria:
+  targetTick: 20
+  maxConstraintViolations: 0
+

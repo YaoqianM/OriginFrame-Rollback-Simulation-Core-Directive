@@ -1,0 +1,139 @@
+# Created at 2025-12-02T17:57:16.032
+Exiting self fork JVM. Received SHUTDOWN command from Maven shutdown hook.
+Thread dump before exiting the process (25076@Mai):
+"main" 
+   java.lang.Thread.State: RUNNABLE
+        at java.base@21.0.2/sun.reflect.generics.parser.SignatureParser.skipIdentifier(SignatureParser.java:266)
+        at java.base@21.0.2/sun.reflect.generics.parser.SignatureParser.parsePackageNameAndSimpleClassTypeSignature(SignatureParser.java:326)
+        at java.base@21.0.2/sun.reflect.generics.parser.SignatureParser.parseClassTypeSignature(SignatureParser.java:304)
+        at java.base@21.0.2/sun.reflect.generics.parser.SignatureParser.parseFieldTypeSignature(SignatureParser.java:283)
+        at java.base@21.0.2/sun.reflect.generics.parser.SignatureParser.parseFieldTypeSignature(SignatureParser.java:277)
+        at java.base@21.0.2/sun.reflect.generics.parser.SignatureParser.parseTypeSignature(SignatureParser.java:469)
+        at java.base@21.0.2/sun.reflect.generics.parser.SignatureParser.parseTypeSig(SignatureParser.java:188)
+        at java.base@21.0.2/sun.reflect.annotation.AnnotationParser.parseSig(AnnotationParser.java:439)
+        at java.base@21.0.2/sun.reflect.annotation.AnnotationParser.parseEnumValue(AnnotationParser.java:473)
+        at java.base@21.0.2/sun.reflect.annotation.AnnotationParser.lambda$parseEnumArray$1(AnnotationParser.java:726)
+        at java.base@21.0.2/sun.reflect.annotation.AnnotationParser$$Lambda/0x000001f8b706ed38.get(Unknown Source)
+        at java.base@21.0.2/sun.reflect.annotation.AnnotationParser.parseArrayElements(AnnotationParser.java:746)
+        at java.base@21.0.2/sun.reflect.annotation.AnnotationParser.parseEnumArray(AnnotationParser.java:725)
+        at java.base@21.0.2/sun.reflect.annotation.AnnotationParser.parseArray(AnnotationParser.java:532)
+        at java.base@21.0.2/sun.reflect.annotation.AnnotationParser.parseMemberValue(AnnotationParser.java:353)
+        at java.base@21.0.2/sun.reflect.annotation.AnnotationParser.parseAnnotation2(AnnotationParser.java:282)
+        at java.base@21.0.2/sun.reflect.annotation.AnnotationParser.parseAnnotations2(AnnotationParser.java:121)
+        at java.base@21.0.2/sun.reflect.annotation.AnnotationParser.parseAnnotations(AnnotationParser.java:73)
+        at java.base@21.0.2/java.lang.Class.createAnnotationData(Class.java:4246)
+        at java.base@21.0.2/java.lang.Class.annotationData(Class.java:4235)
+        at java.base@21.0.2/java.lang.Class.getAnnotation(Class.java:4118)
+        at java.base@21.0.2/java.lang.reflect.AnnotatedElement.isAnnotationPresent(AnnotatedElement.java:292)
+        at java.base@21.0.2/java.lang.Class.isAnnotationPresent(Class.java:4128)
+        at app//org.junit.platform.commons.util.AnnotationUtils.findAnnotation(AnnotationUtils.java:136)
+        at app//org.junit.jupiter.engine.descriptor.TestInstanceLifecycleUtils.getTestInstanceLifecycle(TestInstanceLifecycleUtils.java:40)
+        at app//org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.<init>(ClassBasedTestDescriptor.java:105)
+        at app//org.junit.jupiter.engine.descriptor.ClassTestDescriptor.<init>(ClassTestDescriptor.java:51)
+        at app//org.junit.jupiter.engine.discovery.ClassSelectorResolver.newClassTestDescriptor(ClassSelectorResolver.java:119)
+        at app//org.junit.jupiter.engine.discovery.ClassSelectorResolver.lambda$resolve$0(ClassSelectorResolver.java:71)
+        at app//org.junit.jupiter.engine.discovery.ClassSelectorResolver$$Lambda/0x000001f8b7039dd8.apply(Unknown Source)
+        at app//org.junit.platform.engine.support.discovery.EngineDiscoveryRequestResolution$DefaultContext.createAndAdd(EngineDiscoveryRequestResolution.java:250)
+        at app//org.junit.platform.engine.support.discovery.EngineDiscoveryRequestResolution$DefaultContext.addToParent(EngineDiscoveryRequestResolution.java:213)
+        at app//org.junit.jupiter.engine.discovery.ClassSelectorResolver.resolve(ClassSelectorResolver.java:71)
+        at app//org.junit.platform.engine.support.discovery.EngineDiscoveryRequestResolution.lambda$resolve$2(EngineDiscoveryRequestResolution.java:135)
+        at app//org.junit.platform.engine.support.discovery.EngineDiscoveryRequestResolution$$Lambda/0x000001f8b7036430.apply(Unknown Source)
+        at java.base@21.0.2/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+        at java.base@21.0.2/java.util.ArrayList$ArrayListSpliterator.tryAdvance(ArrayList.java:1685)
+        at java.base@21.0.2/java.util.stream.ReferencePipeline.forEachWithCancel(ReferencePipeline.java:129)
+        at java.base@21.0.2/java.util.stream.AbstractPipeline.copyIntoWithCancel(AbstractPipeline.java:527)
+        at java.base@21.0.2/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:513)
+        at java.base@21.0.2/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:499)
+        at java.base@21.0.2/java.util.stream.FindOps$FindOp.evaluateSequential(FindOps.java:150)
+        at java.base@21.0.2/java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)
+        at java.base@21.0.2/java.util.stream.ReferencePipeline.findFirst(ReferencePipeline.java:647)
+        at app//org.junit.platform.engine.support.discovery.EngineDiscoveryRequestResolution.resolve(EngineDiscoveryRequestResolution.java:189)
+        at app//org.junit.platform.engine.support.discovery.EngineDiscoveryRequestResolution.resolve(EngineDiscoveryRequestResolution.java:126)
+        at app//org.junit.platform.engine.support.discovery.EngineDiscoveryRequestResolution.resolveCompletely(EngineDiscoveryRequestResolution.java:92)
+        at app//org.junit.platform.engine.support.discovery.EngineDiscoveryRequestResolution.run(EngineDiscoveryRequestResolution.java:83)
+        at app//org.junit.platform.engine.support.discovery.EngineDiscoveryRequestResolver.resolve(EngineDiscoveryRequestResolver.java:113)
+        at app//org.junit.jupiter.engine.discovery.DiscoverySelectorResolver.resolveSelectors(DiscoverySelectorResolver.java:46)
+        at app//org.junit.jupiter.engine.JupiterTestEngine.discover(JupiterTestEngine.java:69)
+        at app//org.junit.platform.launcher.core.EngineDiscoveryOrchestrator.discoverEngineRoot(EngineDiscoveryOrchestrator.java:152)
+        at app//org.junit.platform.launcher.core.EngineDiscoveryOrchestrator.discoverSafely(EngineDiscoveryOrchestrator.java:132)
+        at app//org.junit.platform.launcher.core.EngineDiscoveryOrchestrator.discover(EngineDiscoveryOrchestrator.java:107)
+        at app//org.junit.platform.launcher.core.EngineDiscoveryOrchestrator.discover(EngineDiscoveryOrchestrator.java:78)
+        at app//org.junit.platform.launcher.core.DefaultLauncher.discover(DefaultLauncher.java:99)
+        at app//org.junit.platform.launcher.core.DefaultLauncher.discover(DefaultLauncher.java:77)
+        at app//org.junit.platform.launcher.core.DelegatingLauncher.discover(DelegatingLauncher.java:42)
+        at app//org.apache.maven.surefire.junitplatform.LazyLauncher.discover(LazyLauncher.java:50)
+        at app//org.apache.maven.surefire.junitplatform.TestPlanScannerFilter.accept(TestPlanScannerFilter.java:52)
+        at app//org.apache.maven.surefire.api.util.DefaultScanResult.applyFilter(DefaultScanResult.java:87)
+        at app//org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.scanClasspath(JUnitPlatformProvider.java:142)
+        at app//org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invoke(JUnitPlatformProvider.java:122)
+        at app//org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:385)
+        at app//org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:162)
+        at app//org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)
+        at app//org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)
+
+"Reference Handler" 
+   java.lang.Thread.State: RUNNABLE
+        at java.base@21.0.2/java.lang.ref.Reference.waitForReferencePendingList(Native Method)
+        at java.base@21.0.2/java.lang.ref.Reference.processPendingReferences(Reference.java:246)
+        at java.base@21.0.2/java.lang.ref.Reference$ReferenceHandler.run(Reference.java:208)
+
+"Finalizer" 
+   java.lang.Thread.State: WAITING
+        at java.base@21.0.2/java.lang.Object.wait0(Native Method)
+        at java.base@21.0.2/java.lang.Object.wait(Object.java:366)
+        at java.base@21.0.2/java.lang.Object.wait(Object.java:339)
+        at java.base@21.0.2/java.lang.ref.NativeReferenceQueue.await(NativeReferenceQueue.java:48)
+        at java.base@21.0.2/java.lang.ref.ReferenceQueue.remove0(ReferenceQueue.java:158)
+        at java.base@21.0.2/java.lang.ref.NativeReferenceQueue.remove(NativeReferenceQueue.java:89)
+        at java.base@21.0.2/java.lang.ref.Finalizer$FinalizerThread.run(Finalizer.java:173)
+
+"Signal Dispatcher" 
+   java.lang.Thread.State: RUNNABLE
+
+"Attach Listener" 
+   java.lang.Thread.State: RUNNABLE
+
+"Notification Thread" 
+   java.lang.Thread.State: RUNNABLE
+
+"Common-Cleaner" 
+   java.lang.Thread.State: TIMED_WAITING
+        at java.base@21.0.2/jdk.internal.misc.Unsafe.park(Native Method)
+        at java.base@21.0.2/java.util.concurrent.locks.LockSupport.parkNanos(LockSupport.java:269)
+        at java.base@21.0.2/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1847)
+        at java.base@21.0.2/java.lang.ref.ReferenceQueue.await(ReferenceQueue.java:71)
+        at java.base@21.0.2/java.lang.ref.ReferenceQueue.remove0(ReferenceQueue.java:143)
+        at java.base@21.0.2/java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:218)
+        at java.base@21.0.2/jdk.internal.ref.CleanerImpl.run(CleanerImpl.java:140)
+        at java.base@21.0.2/java.lang.Thread.runWith(Thread.java:1596)
+        at java.base@21.0.2/java.lang.Thread.run(Thread.java:1583)
+        at java.base@21.0.2/jdk.internal.misc.InnocuousThread.run(InnocuousThread.java:186)
+
+"surefire-forkedjvm-stream-flusher" 
+   java.lang.Thread.State: TIMED_WAITING
+        at java.base@21.0.2/jdk.internal.misc.Unsafe.park(Native Method)
+        at java.base@21.0.2/java.util.concurrent.locks.LockSupport.parkNanos(LockSupport.java:269)
+        at java.base@21.0.2/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.awaitNanos(AbstractQueuedSynchronizer.java:1758)
+        at java.base@21.0.2/java.util.concurrent.ScheduledThreadPoolExecutor$DelayedWorkQueue.take(ScheduledThreadPoolExecutor.java:1182)
+        at java.base@21.0.2/java.util.concurrent.ScheduledThreadPoolExecutor$DelayedWorkQueue.take(ScheduledThreadPoolExecutor.java:899)
+        at java.base@21.0.2/java.util.concurrent.ThreadPoolExecutor.getTask(ThreadPoolExecutor.java:1070)
+        at java.base@21.0.2/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1130)
+        at java.base@21.0.2/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+        at java.base@21.0.2/java.lang.Thread.runWith(Thread.java:1596)
+        at java.base@21.0.2/java.lang.Thread.run(Thread.java:1583)
+
+"surefire-forkedjvm-command-thread" 
+   java.lang.Thread.State: RUNNABLE
+        at java.management@21.0.2/sun.management.ThreadImpl.getThreadInfo1(Native Method)
+        at java.management@21.0.2/sun.management.ThreadImpl.getThreadInfo(ThreadImpl.java:187)
+        at app//org.apache.maven.surefire.booter.ForkedBooter.generateThreadDump(ForkedBooter.java:579)
+        at app//org.apache.maven.surefire.booter.ForkedBooter.access$600(ForkedBooter.java:79)
+        at app//org.apache.maven.surefire.booter.ForkedBooter$4.update(ForkedBooter.java:315)
+        at app//org.apache.maven.surefire.booter.CommandReader$CommandRunnable.callListeners(CommandReader.java:357)
+        at app//org.apache.maven.surefire.booter.CommandReader$CommandRunnable.exitByConfiguration(CommandReader.java:367)
+        at app//org.apache.maven.surefire.booter.CommandReader$CommandRunnable.run(CommandReader.java:330)
+        at java.base@21.0.2/java.lang.Thread.runWith(Thread.java:1596)
+        at java.base@21.0.2/java.lang.Thread.run(Thread.java:1583)
+
+
+

@@ -1,0 +1,22 @@
+-------------------------------------------------------------------------------
+Test set: prototype.lineageruntime.health.AnomalyDetectorTest
+-------------------------------------------------------------------------------
+Tests run: 7, Failures: 2, Errors: 0, Skipped: 0, Time elapsed: 0.111 s <<< FAILURE! -- in prototype.lineageruntime.health.AnomalyDetectorTest
+prototype.lineageruntime.health.AnomalyDetectorTest.detectsErrorRateSpike -- Time elapsed: 0.006 s <<< FAILURE!
+java.lang.AssertionError: 
+
+Expecting Optional to contain a value but it was empty.
+	at prototype.lineageruntime.health.AnomalyDetectorTest.detectsErrorRateSpike(AnomalyDetectorTest.java:44)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+
+prototype.lineageruntime.health.AnomalyDetectorTest.detectsHighLatencyAnomalyWhenZScoreExceedsThreshold -- Time elapsed: 0.002 s <<< FAILURE!
+java.lang.AssertionError: 
+
+Expecting Optional to contain a value but it was empty.
+	at prototype.lineageruntime.health.AnomalyDetectorTest.detectsHighLatencyAnomalyWhenZScoreExceedsThreshold(AnomalyDetectorTest.java:31)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+
